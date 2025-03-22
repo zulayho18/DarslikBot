@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    container_name: django
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - sqlite_data:/app/db
+    environment:
+      - DATABASE_URL=sqlite:///app/db/db.sqlite3
+    command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+
+  bot:
+    build: .
+    container_name: telegram_bot
+    restart: always
+    depends_on:
+      - django
+    volumes:
+      - sqlite_data:/app/db
+    environment:
+      - DATABASE_URL=sqlite:///app/db/db.sqlite3
+      - DJANGO_API_URL=http://django:8000/api/books/
+    command: ["sh", "-c", "python main.py"]
+
+volumes:
+  sqlite_data:
