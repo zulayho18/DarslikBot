@@ -1,0 +1,2 @@
+# DarslikBot
+maktab uchun darsliklari
